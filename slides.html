@@ -35,6 +35,8 @@
         
         <h3><a href="https://twitter.com/#!/mikegehard">@mikegehard</a></h3>
         
+        <h3><a href="https://github.com/msgehard/Better-Ruby-Through-Design-Patterns">https://github.com/msgehard/Better-Ruby-Through-Design-Patterns</a></h3>
+        
         <h5>* Bonus points to anyone who can name the musical reference</h5>
       </div>
       <div class='spacer bottom'></div>
@@ -134,7 +136,7 @@
     <section class='slide'>
       <div class='spacer top'></div>
       <div class='content'>
-        <p><textarea class='code' display='none' mode='ruby'>class Post < ActiveRecord::Base&#x000A;&#x000A;  has_many :comments&#x000A;  belongs_to :author&#x000A;&#x000A;  after_update :alert_updated&#x000A;&#x000A;  def approve!&#x000A;    update_attribute(:approved, true)&#x000A;  end&#x000A;&#x000A;  def attribute_to(user)&#x000A;    update_attribute(:author, user)&#x000A;  end&#x000A;&#x000A;  def add_comment(comment_text)&#x000A;    comments << Comment.new(:text => comment_text)&#x000A;  end&#x000A;&#x000A;  private&#x000A;  def alert_updated&#x000A;  # tell everyone that the post was updated&#x000A;    # and what changed via email&#x000A;  end&#x000A;&#x000A;  # only 100 more lines of code if you are lucky&#x000A;  # and you have a lot more classes that look like this&#x000A;&#x000A;end</textarea>
+        <p><textarea class='code' display='none' mode='ruby'>class Post < ActiveRecord::Base&#x000A;&#x000A;  has_many :comments&#x000A;  belongs_to :author&#x000A;&#x000A;  after_update :alert_updated&#x000A;&#x000A;  def approve!&#x000A;    update_attribute(:approved, true)&#x000A;  end&#x000A;&#x000A;  def attribute_to(user)&#x000A;    update_attribute(:author, user)&#x000A;  end&#x000A;&#x000A;  private&#x000A;  def alert_updated&#x000A;    # tell everyone that the post was updated&#x000A;    # and what changed via email&#x000A;  end&#x000A;&#x000A;  # only 100 more lines of code if you are lucky&#x000A;  # and you have a lot more classes that look like this&#x000A;&#x000A;end</textarea>
     </p>
       </div>
       <div class='spacer bottom'></div>
@@ -190,27 +192,15 @@
     <section class='slide'>
       <div class='spacer top'></div>
       <div class='content'>
-        <h1>Open/Closed Principle</h1>
-        
-        <h3>You should be able to extend a classes behavior, without modifying it.</h3>
+        <p><textarea class='code' display='none' mode='ruby'>class FileProcessor&#x000A;  &#x000A;  def process_file(url)&#x000A;    file = download_file(url)&#x000A;    status = parse_file(file)&#x000A;    report_status(status)&#x000A;  end&#x000A;&#x000A;  private &#x000A;  def download_file(url)&#x000A;    # do some downloading stuff&#x000A;  end&#x000A;&#x000A;  def parse_file(file)&#x000A;    # do that parsing stuff you do&#x000A;  end&#x000A;&#x000A;  def report_status(status)&#x000A;    # probably email for now&#x000A;  end&#x000A;&#x000A;end</textarea>
+    </p>
       </div>
       <div class='spacer bottom'></div>
     </section>
     <section class='slide'>
       <div class='spacer top'></div>
       <div class='content'>
-        <h1>Liskov Substitution Principle</h1>
-        
-        <h3>Derived classes must be substitutable for their base classes.</h3>
-      </div>
-      <div class='spacer bottom'></div>
-    </section>
-    <section class='slide'>
-      <div class='spacer top'></div>
-      <div class='content'>
-        <h1>Interface Segregation Principle</h1>
-        
-        <h3>Make fine grained interfaces that are client specific.</h3>
+        <h1>AND/OR</h1>
       </div>
       <div class='spacer bottom'></div>
     </section>
@@ -226,23 +216,184 @@
     <section class='slide'>
       <div class='spacer top'></div>
       <div class='content'>
-        <h1>Other design principles</h1>
+        <p><textarea class='code' display='none' mode='ruby'>class FileProcessor&#x000A;  &#x000A;  def process_file(url)&#x000A;    file = download_file(url)&#x000A;    status = parse_file(file)&#x000A;    report_status(status)&#x000A;  end&#x000A;&#x000A;  private &#x000A;  def download_file(url)&#x000A;    # do some downloading stuff&#x000A;  end&#x000A;&#x000A;  def parse_file(file)&#x000A;    # do that parsing stuff you do&#x000A;  end&#x000A;&#x000A;  def report_status(status)&#x000A;    # probably email for now&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;processor.process_file(ftp://foo.com/my_file.pdf)</textarea>
+    </p>
       </div>
       <div class='spacer bottom'></div>
     </section>
     <section class='slide'>
       <div class='spacer top'></div>
       <div class='content'>
-        <h1>Law of Demter</h1>
+        <p><textarea class='code' display='none' mode='ruby '>class FileProcessor&#x000A;  def initialize(reporter)&#x000A;    @downloader = downloader&#x000A;    @reporter = reporter&#x000A;  end&#x000A;&#x000A;  def process_file(url)&#x000A;    downloader = Downloaders.find(url)&#x000A;    file = downloder.get&#x000A;    parser = Parsers.find(file)&#x000A;    status = parser.parse&#x000A;    @reporter.report(status)&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;class Downloaders&#x000A;&#x000A;  class FtpDownloader&#x000A;    def get&#x000A;    end&#x000A;  end&#x000A;&#x000A;  def self.find(url)&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;class Parsers&#x000A;&#x000A;  class PdfParser&#x000A;    def initialize(file) &#x000A;      @file = file&#x000A;    end&#x000A;    def parse&#x000A;    end&#x000A;  end&#x000A;&#x000A;  def self.find(file)&#x000A;    return newPdfParser(file)&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;class EmailReporter&#x000A;  def report(status)&#x000A;  end&#x000A;end&#x000A;&#x000A;processor = FileProcessor(new EmailReporter)&#x000A;processor.process_file(ftp://foo.com/my_file.pdf)</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>What happens when you need to parse a CSV file?</h1>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p><textarea class='code' display='none' mode='ruby '>class FileProcessor&#x000A;  def initialize(reporter)&#x000A;    @downloader = downloader&#x000A;    @reporter = reporter&#x000A;  end&#x000A;&#x000A;  def process_file(url)&#x000A;    downloader = Downloaders.find(url)&#x000A;    file = downloder.get&#x000A;    parser = Parsers.find(file)&#x000A;    status = parser.parse&#x000A;    @reporter.report(status)&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;class Parsers&#x000A;&#x000A;  class PdfParser&#x000A;    def parse&#x000A;    end&#x000A;  end&#x000A;&#x000A;  class CsvParser&#x000A;    def parse&#x000A;    end&#x000A;  end&#x000A;&#x000A;  def self.find(file)&#x000A;    if file.extension == 'pdf'&#x000A;      return new PdfParser(file)&#x000A;    else&#x000A;      return new CsvParser(file)&#x000A;    end&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;processor = FileProcessor(new EmailReporter)&#x000A;processor.process_file(ftp://foo.com/my_file.csv)</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>What happens when you need to report via SMS?</h1>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p><textarea class='code' display='none' mode='ruby '>class FileProcessor&#x000A;  def initialize(reporter)&#x000A;    @downloader = downloader&#x000A;    @reporter = reporter&#x000A;  end&#x000A;&#x000A;  def process_file(url)&#x000A;    downloader = Downloaders.find(url)&#x000A;    file = downloder.get&#x000A;    parser = Parsers.find(file)&#x000A;    status = parser.parse&#x000A;    @reporter.report(status)&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;class SmsReporter&#x000A;  def report(status)&#x000A;  end&#x000A;end&#x000A;&#x000A;processor = FileProcessor(new SmsReporter)&#x000A;processor.process_file(ftp://foo.com/my_file.pdf)</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>Open/Closed Principle</h1>
         
-        <h2>More a code smell than a specific design principle</h2>
+        <h3>You should be able to extend a classes behavior, without modifying it.</h3>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p><img src="images/open-closed.png" alt="Dependency Graph" /></p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p>cool_library.rb</p>
+        
+        <p><textarea class='code' display='none' mode='ruby'>class CoolLibrary&#x000A;&#x000A;  def do_something_cool&#x000A;    puts "I am cool!"&#x000A;  end&#x000A;&#x000A;  # and other cool things&#x000A;end</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>Fork it?</h1>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p>your_app.rb</p>
+        
+        <p><textarea class='code' display='none' mode='ruby'>class CoolLibrary&#x000A;&#x000A;  def do_something_cool&#x000A;   puts "I am cool!"&#x000A;   puts "I am more cool!"&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;cool_library = new CoolLibrary&#x000A;&#x000A;cool_library.do_something_cool&#x000A;&#x000A;# no easy way to get back to original functionality</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p>your_app.rb</p>
+        
+        <p><textarea class='code' display='none' mode='ruby'>class MyCoolLibrary < CoolLibrary&#x000A;&#x000A;  def do_something_cool&#x000A;	super&#x000A;    puts "I am more cool!"&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;cool_library = new MyCoolLibrary&#x000A;&#x000A;cool_library.do_something_cool</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p>your_app.rb</p>
+        
+        <p><textarea class='code' display='none' mode='ruby'>class CoolLibraryDecorator&#x000A;&#x000A;  def initialize(cool_library)&#x000A;    @cool_library = cool_library&#x000A;  end&#x000A;&#x000A;  def do_something_cool&#x000A;    @cool_library.do_something_cool&#x000A;    puts "I am more cool!"&#x000A;  end&#x000A;&#x000A;end&#x000A;&#x000A;cool_library = newCoolLibraryDecorator(new CoolLibrary)&#x000A;&#x000A;cool_library.do_something_cool</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>Liskov Substitution Principle</h1>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p>If for each object o1 of type S there is an object o2 of type T such that for all programs P deﬁned in terms of T, the behavior of P is unchanged when o1 is substituted for o2 then S is a subtype of T. - Barbara Liskov</p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p><textarea class='code' display='none' mode='ruby'>class NormalMath&#x000A;&#x000A;  def sq_root(number)&#x000A;    # do some math on number&#x000A;    # return some value to 4 decimal places&#x000A;  end&#x000A;&#x000A;end</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p><textarea class='code' display='none' mode='ruby'>class PreciceMath&#x000A;&#x000A;  def sq_root(number)&#x000A;    # do some math on number&#x000A;    # return some value to 8 decimal places&#x000A;  end&#x000A;&#x000A;end</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <p><textarea class='code' display='none' mode='ruby'>class SloppyMath&#x000A;&#x000A;  def sq_root(number)&#x000A;    # do some math on number&#x000A;    # return some value to 2 decimal places&#x000A;  end&#x000A;&#x000A;end</textarea>
+    </p>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>Can I freely substitute instances of these classes?</h1>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>Ask for no more and promise no less.</h1>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>Interface Segregation Principle</h1>
+        
+        <h3>Make fine grained interfaces that are client specific.</h3>
+      </div>
+      <div class='spacer bottom'></div>
+    </section>
+    <section class='slide'>
+      <div class='spacer top'></div>
+      <div class='content'>
+        <h1>But Ruby doesn't have interfaces?</h1>
       </div>
       <div class='spacer bottom'></div>
     </section>
     <section class='bottom-left full-background mileage slide'>
       <div class='spacer top'></div>
       <div class='content'>
-        <h1>your mileage may vary</h1>
+        <h1>Your mileage may vary</h1>
       </div>
       <div class='spacer bottom'></div>
       <div class='attribution flickr'>

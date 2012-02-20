@@ -7,6 +7,7 @@
 
 ### Mike Gehard
 ### [@mikegehard](https://twitter.com/#!/mikegehard)
+### [https://github.com/msgehard/Better-Ruby-Through-Design-Patterns](https://github.com/msgehard/Better-Ruby-Through-Design-Patterns)
 
 ##### * Bonus points to anyone who can name the musical reference
 
@@ -91,13 +92,9 @@ class Post < ActiveRecord::Base
     update_attribute(:author, user)
   end
 
-  def add_comment(comment_text)
-    comments << Comment.new(:text => comment_text)
-  end
-
   private
   def alert_updated
-  # tell everyone that the post was updated
+    # tell everyone that the post was updated
     # and what changed via email
   end
 
@@ -148,36 +145,385 @@ get their work done.
 ### A class should have one, and only one, reason to change.
 
 !SLIDE
-#Open/Closed Principle
-### You should be able to extend a classes behavior, without modifying it.
+``` ruby
+
+class FileProcessor
+  
+  def process_file(url)
+    file = download_file(url)
+    status = parse_file(file)
+    report_status(status)
+  end
+
+  private 
+  def download_file(url)
+    # do some downloading stuff
+  end
+
+  def parse_file(file)
+    # do that parsing stuff you do
+  end
+
+  def report_status(status)
+    # probably email for now
+  end
+
+end
+
+```
 
 !SLIDE
-#Liskov Substitution Principle
-### Derived classes must be substitutable for their base classes.
+
+#AND/OR
 
 !SLIDE
-# Interface Segregation Principle
-### Make fine grained interfaces that are client specific.
 
-
-!SLIDE
 #Dependency Inversion Principle 
 ### Depend on abstractions, not on concretions.
 
 !NOTES
   * In Ruby you build to an protocol/contract
 
+!SLIDE
+```ruby
+
+class FileProcessor
+  
+  def process_file(url)
+    file = download_file(url)
+    status = parse_file(file)
+    report_status(status)
+  end
+
+  private 
+  def download_file(url)
+    # do some downloading stuff
+  end
+
+  def parse_file(file)
+    # do that parsing stuff you do
+  end
+
+  def report_status(status)
+    # probably email for now
+  end
+
+end
+
+processor.process_file(ftp://foo.com/my_file.pdf)
+
+```
 
 !SLIDE
-#Other design principles
+
+``` ruby 
+
+class FileProcessor
+  def initialize(reporter)
+    @downloader = downloader
+    @reporter = reporter
+  end
+
+  def process_file(url)
+    downloader = Downloaders.find(url)
+    file = downloder.get
+    parser = Parsers.find(file)
+    status = parser.parse
+    @reporter.report(status)
+  end
+
+end
+
+class Downloaders
+
+  class FtpDownloader
+    def get
+    end
+  end
+
+  def self.find(url)
+  end
+
+end
+
+class Parsers
+
+  class PdfParser
+    def initialize(file) 
+      @file = file
+    end
+    def parse
+    end
+  end
+
+  def self.find(file)
+    return newPdfParser(file)
+  end
+
+end
+
+class EmailReporter
+  def report(status)
+  end
+end
+
+processor = FileProcessor(new EmailReporter)
+processor.process_file(ftp://foo.com/my_file.pdf)
+
+```
 
 !SLIDE
-#Law of Demter
-## More a code smell than a specific design principle
+# What happens when you need to parse a CSV file?
+
+!SLIDE
+
+
+``` ruby 
+class FileProcessor
+  def initialize(reporter)
+    @downloader = downloader
+    @reporter = reporter
+  end
+
+  def process_file(url)
+    downloader = Downloaders.find(url)
+    file = downloder.get
+    parser = Parsers.find(file)
+    status = parser.parse
+    @reporter.report(status)
+  end
+
+end
+
+class Parsers
+
+  class PdfParser
+    def parse
+    end
+  end
+
+  class CsvParser
+    def parse
+    end
+  end
+
+  def self.find(file)
+    if file.extension == 'pdf'
+      return new PdfParser(file)
+    else
+      return new CsvParser(file)
+    end
+  end
+
+end
+
+processor = FileProcessor(new EmailReporter)
+processor.process_file(ftp://foo.com/my_file.csv)
+
+```
+
+!SLIDE
+#What happens when you need to report via SMS?
+
+!SLIDE
+
+``` ruby 
+class FileProcessor
+  def initialize(reporter)
+    @downloader = downloader
+    @reporter = reporter
+  end
+
+  def process_file(url)
+    downloader = Downloaders.find(url)
+    file = downloder.get
+    parser = Parsers.find(file)
+    status = parser.parse
+    @reporter.report(status)
+  end
+
+end
+
+class SmsReporter
+  def report(status)
+  end
+end
+
+processor = FileProcessor(new SmsReporter)
+processor.process_file(ftp://foo.com/my_file.pdf)
+
+```
+
+
+!SLIDE
+#Open/Closed Principle
+### You should be able to extend a classes behavior, without modifying it.
+
+!SLIDE
+
+![Dependency Graph](images/open-closed.png)
+
+!SLIDE
+
+cool_library.rb
+
+``` ruby
+
+class CoolLibrary
+
+  def do_something_cool
+    puts "I am cool!"
+  end
+
+  # and other cool things
+end
+
+```
+
+!SLIDE
+#Fork it?
+
+!SLIDE
+
+your_app.rb
+
+``` ruby
+
+class CoolLibrary
+
+  def do_something_cool
+   puts "I am cool!"
+   puts "I am more cool!"
+  end
+
+end
+
+cool_library = new CoolLibrary
+
+cool_library.do_something_cool
+
+# no easy way to get back to original functionality
+
+```
+
+!SLIDE
+
+your_app.rb
+
+``` ruby
+class MyCoolLibrary < CoolLibrary
+
+  def do_something_cool
+	super
+    puts "I am more cool!"
+  end
+
+end
+
+cool_library = new MyCoolLibrary
+
+cool_library.do_something_cool
+
+```
+
+!SLIDE
+your_app.rb
+
+``` ruby
+
+class CoolLibraryDecorator
+
+  def initialize(cool_library)
+    @cool_library = cool_library
+  end
+
+  def do_something_cool
+    @cool_library.do_something_cool
+    puts "I am more cool!"
+  end
+
+end
+
+cool_library = newCoolLibraryDecorator(new CoolLibrary)
+
+cool_library.do_something_cool
+
+```
+
+!SLIDE
+#Liskov Substitution Principle
+
+!SLIDE
+If for each object o1 of type S there is an object o2 of type T such that for all programs P deﬁned in terms of T, the behavior of P is unchanged when o1 is substituted for o2 then S is a subtype of T. - Barbara Liskov
+
+
+!SLIDE
+
+``` ruby
+
+class NormalMath
+
+  def sq_root(number)
+    # do some math on number
+    # return some value to 4 decimal places
+  end
+
+end
+
+```
+
+!SLIDE
+
+``` ruby
+
+class PreciceMath
+
+  def sq_root(number)
+    # do some math on number
+    # return some value to 8 decimal places
+  end
+
+end
+
+```
+
+!SLIDE
+
+``` ruby
+
+class SloppyMath
+
+  def sq_root(number)
+    # do some math on number
+    # return some value to 2 decimal places
+  end
+
+end
+
+```
+
+!SLIDE
+
+#Can I freely substitute instances of these classes?
+
+!SLIDE
+#Ask for no more and promise no less.
+
+
+!SLIDE
+# Interface Segregation Principle
+### Make fine grained interfaces that are client specific.
+
+!SLIDE
+# But Ruby doesn't have interfaces?
+
+!NOTES
+  * What about making your classes small and single responsibility?
+  * Makes it easier for people to learn your API.
 
 !SLIDE bottom-left
 
-#your mileage may vary
+#Your mileage may vary
  
 
 }}} images/mileage.jpg::kennejima::flickr::http://www.flickr.com/people/kennejima/
@@ -188,6 +534,7 @@ get their work done.
  * Give you guidance when writing code
  * Some principles may conflict with each other in some situations
  * Use your best judgement
+ * Sometimes SOLID principles don't apply but they make you slow down and think.
 
 !SLIDE bottom-left
 #Thank you. Any questions?
