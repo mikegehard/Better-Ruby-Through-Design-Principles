@@ -517,9 +517,10 @@ end
 !SLIDE
 # But Ruby doesn't have interfaces?
 
-!NOTES
-  * What about making your classes small and single responsibility?
-  * Makes it easier for people to learn your API.
+
+!SLIDE
+# What about making your classes small and single responsibility?
+##Makes it easier for people to learn your API.
 
 !SLIDE bottom-left
 
