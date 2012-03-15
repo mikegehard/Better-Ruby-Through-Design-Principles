@@ -1,10 +1,16 @@
 class FileProcessor
 
-  def process_file(file_name, reporter)
+  def process_file(file_name)
     parser = FileParsers.find(file_name)
     status = parser.parse
 
-    reporter.report(status)
+    report_status(status)
+  end
+
+  private
+  def report_status(status)
+    # probably email for now
+    puts "Reporting status: #{status}"
   end
 
 end
@@ -47,21 +53,7 @@ class FileParsers
 
 end
 
-class EmailReporter
-  def initialize(smtp_server)
-    @smtp_server = smtp_server
-  end
-  def report(status)
-    puts "Emailing status: #{status} via #{@smtp_server}"
-  end
-end
-
-class SmsReporter
-  def report(status)
-    puts "Sms reporting status: #{status}"
-  end
-end
-
 processor = FileProcessor.new
-processor.process_file('my_file.csv', EmailReporter.new("MySmtpServer"))
-processor.process_file('my_file.tsv', SmsReporter.new)
+processor.process_file('my_file.csv')
+processor.process_file('my_file.tsv')
+processor.process_file('my_file.pdf')
